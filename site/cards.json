@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "topic": "Test",
+    "front": "sync check",
+    "back": "this card was added via the website"
+  }
+]
