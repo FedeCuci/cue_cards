@@ -11,3 +11,4 @@ services:
       - EDIT_PASSWORD=${EDIT_PASSWORD}
     volumes:
       - ./site:/app/site
+      - ./data:/app/data

@@ -38,35 +38,65 @@
   header {
     width: 100%;
     max-width: 640px;
-    padding: 1.25rem 1rem 0.5rem;
+    padding: 1.25rem 1rem 0.25rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.6rem;
+    flex-wrap: wrap;
   }
   header h1 { font-size: 1.1rem; font-weight: 600; margin-right: auto; }
-  header select {
+  header .due-badge {
+    font-size: 0.72rem;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
+  }
+  .tabs {
+    width: 100%;
+    max-width: 640px;
+    padding: 0 1rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .tab {
     font: inherit;
     font-size: 0.85rem;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.35rem 0.2rem;
+    margin-right: 0.6rem;
+    cursor: pointer;
+  }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  select {
+    font: inherit;
+    font-size: 0.8rem;
     color: var(--text);
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 0.3rem 0.5rem;
-    max-width: 11rem;
+    padding: 0.25rem 0.4rem;
+    margin-left: auto;
+    max-width: 10rem;
   }
-  button {
+  button.btn {
     font: inherit;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text);
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 0.4rem 0.9rem;
+    padding: 0.5rem 1.1rem;
     cursor: pointer;
   }
-  button:hover { border-color: var(--accent); }
-  button.danger:hover { border-color: var(--danger); color: var(--danger); }
+  button.btn:hover { border-color: var(--accent); }
+  button.btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+  button.btn.got { border-color: var(--accent); color: var(--accent); }
+  button.btn.missed { border-color: var(--danger); color: var(--danger); }
   main {
     width: 100%;
     max-width: 640px;
@@ -76,11 +106,7 @@
     flex-direction: column;
     gap: 1rem;
   }
-  #counter {
-    text-align: center;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
+  #counter { text-align: center; font-size: 0.8rem; color: var(--muted); }
   .card-holder { perspective: 1200px; }
   #card {
     position: relative;
@@ -108,40 +134,20 @@
   }
   .face.back { transform: rotateY(180deg); }
   .face .topic {
-    position: absolute;
-    top: 0.85rem;
-    left: 1rem;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    position: absolute; top: 0.85rem; left: 1rem;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--accent);
   }
   .face .label {
-    position: absolute;
-    top: 0.85rem;
-    right: 1rem;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    position: absolute; top: 0.85rem; right: 1rem;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--muted);
   }
-  .face .content {
-    font-size: 1.25rem;
-    line-height: 1.5;
-    white-space: pre-wrap;
-  }
+  .face .content { font-size: 1.25rem; line-height: 1.5; white-space: pre-wrap; }
   .face.back .content { font-size: 1.05rem; }
-  .hint {
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-  nav {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-  #empty {
+  .hint { text-align: center; font-size: 0.75rem; color: var(--muted); }
+  nav { display: flex; justify-content: center; gap: 0.75rem; }
+  .notice {
     background: var(--card);
     border: 1px dashed var(--border);
     border-radius: 12px;
@@ -150,50 +156,32 @@
     color: var(--muted);
     line-height: 1.7;
   }
-  #empty code {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 0.1rem 0.35rem;
-    font-size: 0.85em;
+  .notice code {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 0.1rem 0.35rem; font-size: 0.85em;
   }
   /* manage view */
   #manage { display: flex; flex-direction: column; gap: 1rem; }
   .panel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
   }
   .panel h2 { font-size: 0.95rem; font-weight: 600; }
   .panel input, .panel textarea {
-    font: inherit;
-    font-size: 0.9rem;
-    width: 100%;
-    color: var(--text);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.5rem 0.65rem;
+    font: inherit; font-size: 0.9rem; width: 100%;
+    color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.65rem;
   }
   .panel textarea { min-height: 4.2rem; resize: vertical; }
   .panel .actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
   .row {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 0.85rem 1rem;
+    display: flex; flex-direction: column; gap: 0.45rem;
   }
   .row .meta {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--accent);
   }
   .row .q { font-weight: 600; white-space: pre-wrap; }
@@ -202,33 +190,30 @@
   .row .actions button { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
   #listEmpty { text-align: center; color: var(--muted); font-size: 0.85rem; }
   .hidden { display: none !important; }
-  footer {
-    padding: 1rem;
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
+  footer { padding: 1rem; font-size: 0.72rem; color: var(--muted); }
 </style>
 </head>
 <body>
   <header>
     <h1>Learn</h1>
-    <select id="topicFilter" class="hidden" aria-label="Filter by topic"></select>
-    <button id="manageBtn">Manage</button>
+    <span id="dueBadge" class="due-badge hidden"></span>
   </header>
-  <main>
-    <div id="empty" class="hidden">
-      <p><strong>No cue cards yet.</strong></p>
-      <p>Click <em>Manage</em> to add your first card,<br>
-      or bulk-add cards in <code>cards.json</code> and reload.</p>
-    </div>
+  <div class="tabs">
+    <button class="tab active" data-mode="review" id="tabReview">Review</button>
+    <button class="tab" data-mode="browse" id="tabBrowse">Browse</button>
+    <button class="tab" data-mode="manage" id="tabManage">Manage</button>
+    <select id="topicFilter" class="hidden" aria-label="Filter by topic"></select>
+  </div>
 
-    <div id="deck" class="hidden">
+  <main>
+    <!-- shared study card (used by review + browse) -->
+    <div id="study" class="hidden">
       <p id="counter"></p>
       <div class="card-holder">
         <div id="card">
           <div class="face front">
             <span class="topic" id="topicFront"></span>
-            <span class="label">Question</span>
+            <span class="label" id="labelFront">Question</span>
             <div class="content" id="front"></div>
           </div>
           <div class="face back">
@@ -238,13 +223,19 @@
           </div>
         </div>
       </div>
-      <p class="hint">Click the card (or press space) to flip · arrow keys to navigate</p>
-      <nav>
-        <button id="prev">← Prev</button>
-        <button id="shuffle">Shuffle</button>
-        <button id="next">Next →</button>
+      <p class="hint" id="studyHint"></p>
+      <nav id="reviewNav" class="hidden">
+        <button class="btn missed" id="missed">Missed</button>
+        <button class="btn got" id="got">Got it</button>
+      </nav>
+      <nav id="browseNav" class="hidden">
+        <button class="btn" id="prev">← Prev</button>
+        <button class="btn" id="shuffle">Shuffle</button>
+        <button class="btn" id="next">Next →</button>
       </nav>
     </div>
+
+    <div id="notice" class="notice hidden"></div>
 
     <div id="manage" class="hidden">
       <form id="addForm" class="panel">
@@ -252,7 +243,7 @@
         <input id="newTopic" placeholder="Topic (optional)">
         <textarea id="newFront" placeholder="Front — the question or term" required></textarea>
         <textarea id="newBack" placeholder="Back — the answer or definition" required></textarea>
-        <div class="actions"><button type="submit">Add card</button></div>
+        <div class="actions"><button type="submit" class="btn">Add card</button></div>
       </form>
       <div id="cardList"></div>
       <p id="listEmpty" class="hidden">No cards yet — add your first one above.</p>
@@ -260,130 +251,181 @@
   </main>
   <footer>learn.fedecuci.com</footer>
 <script>
-let all = [];            // every card
-let deck = [];           // cards for the selected topic, study order
+let cards = [];          // enriched cards from /api/study: {topic, front, back, box, due}
+let content = [];        // plain content from /api/cards, for the manage view
+let deck = [];           // working list for the current mode
 let i = 0;               // index of the card being shown
-let mode = 'study';      // 'study' or 'manage'
-let editingIndex = null; // which card is being edited in the manage list
+let mode = 'review';     // 'review' | 'browse' | 'manage'
+let editingIndex = null;
 
 const $ = id => document.getElementById(id);
+const topic = () => $('topicFilter').value || 'all';
+const inTopic = c => topic() === 'all' || c.topic === topic();
 
-/* ---------- study view ---------- */
+/* ---------- data ---------- */
 
-function render() {
-  const card = deck[i];
-  $('card').classList.remove('flipped');
-  $('topicFront').textContent = card.topic || '';
-  $('topicBack').textContent = card.topic || '';
-  $('front').textContent = card.front;
-  $('back').textContent = card.back;
-  $('counter').textContent = (i + 1) + ' / ' + deck.length;
+async function loadStudy() {
+  cards = await (await fetch('/api/study?' + Date.now())).json();
 }
 
-function move(step) {
-  i = (i + step + deck.length) % deck.length;
-  render();
-}
+function dueCards() { return cards.filter(c => c.due && inTopic(c)); }
 
-function shuffle() {
-  for (let j = deck.length - 1; j > 0; j--) {
-    const k = Math.floor(Math.random() * (j + 1));
-    [deck[j], deck[k]] = [deck[k], deck[j]];
-  }
-  i = 0;
-  render();
-}
-
-function selectTopic(topic) {
-  deck = topic === 'all' ? all.slice() : all.filter(c => c.topic === topic);
-  i = 0;
-  if (deck.length) render();
-}
-
-// Rebuild the topic dropdown and show/hide study vs empty state
-function refreshStudy() {
+function refreshTopics() {
   const sel = $('topicFilter');
-  const topics = [...new Set(all.map(c => c.topic).filter(Boolean))];
+  const topics = [...new Set(cards.map(c => c.topic).filter(Boolean))];
   const current = sel.value || 'all';
   sel.innerHTML = '';
   sel.add(new Option('All topics', 'all'));
   topics.forEach(t => sel.add(new Option(t, t)));
   sel.value = topics.includes(current) ? current : 'all';
-  const inStudy = mode === 'study';
-  sel.classList.toggle('hidden', !inStudy || topics.length < 2);
-  $('empty').classList.toggle('hidden', !inStudy || all.length > 0);
-  $('deck').classList.toggle('hidden', !inStudy || all.length === 0);
-  if (all.length) selectTopic(sel.value);
+  sel.classList.toggle('hidden', mode === 'manage' || topics.length < 2);
 }
 
-/* ---------- manage view ---------- */
-
-function setMode(m) {
-  mode = m;
-  editingIndex = null;
-  $('manage').classList.toggle('hidden', m !== 'manage');
-  $('manageBtn').textContent = m === 'manage' ? 'Done' : 'Manage';
-  refreshStudy();
-  if (m === 'manage') renderList();
+function updateDueBadge() {
+  const n = cards.filter(c => c.due).length;
+  const badge = $('dueBadge');
+  badge.textContent = n + ' due';
+  badge.classList.toggle('hidden', n === 0);
 }
+
+/* ---------- rendering ---------- */
+
+function showCard(card, label) {
+  $('card').classList.remove('flipped');
+  $('topicFront').textContent = card.topic || '';
+  $('topicBack').textContent = card.topic || '';
+  $('front').textContent = card.front;
+  $('back').textContent = card.back;
+  $('labelFront').textContent = label;
+}
+
+function renderReview() {
+  deck = dueCards();
+  if (deck.length === 0) {
+    $('study').classList.add('hidden');
+    showNotice(cards.length === 0
+      ? '<p><strong>No cue cards yet.</strong></p><p>Add some in <em>Manage</em>, ' +
+        'or bulk-add them in <code>cards.json</code>.</p>'
+      : '<p><strong>All caught up.</strong></p><p>Nothing due right now — ' +
+        'switch to <em>Browse</em> to study anything anyway.</p>');
+    return;
+  }
+  hideNotice();
+  $('study').classList.remove('hidden');
+  if (i >= deck.length) i = 0;
+  showCard(deck[i], deck[i].box === 0 ? 'New' : 'Question');
+  $('counter').textContent = deck.length + ' to review';
+  $('studyHint').textContent = 'Click the card (or press space) to see the answer';
+  $('reviewNav').classList.remove('hidden');
+  $('browseNav').classList.add('hidden');
+}
+
+function renderBrowse() {
+  if (deck.length === 0) { i = 0; }
+  if (cards.length === 0) {
+    $('study').classList.add('hidden');
+    showNotice('<p><strong>No cue cards yet.</strong></p><p>Add some in <em>Manage</em>.</p>');
+    return;
+  }
+  hideNotice();
+  $('study').classList.remove('hidden');
+  if (i >= deck.length) i = 0;
+  showCard(deck[i], 'Question');
+  $('counter').textContent = (i + 1) + ' / ' + deck.length;
+  $('studyHint').textContent = 'Click to flip · arrow keys to navigate';
+  $('reviewNav').classList.add('hidden');
+  $('browseNav').classList.remove('hidden');
+}
+
+function showNotice(html) { $('notice').innerHTML = html; $('notice').classList.remove('hidden'); }
+function hideNotice() { $('notice').classList.add('hidden'); }
+
+function render() {
+  updateDueBadge();
+  if (mode === 'review') renderReview();
+  else if (mode === 'browse') { deck = cards.filter(inTopic); renderBrowse(); }
+}
+
+/* ---------- review actions ---------- */
+
+async function rate(result) {
+  const card = deck[i];
+  if (!card) return;
+  card.due = false;                        // drop it from today's queue locally
+  try {
+    await fetch('/api/review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ front: card.front, result }),
+    });
+  } catch { /* offline: local state already advanced; next load re-syncs */ }
+  render();
+}
+
+/* ---------- browse actions ---------- */
+
+function move(step) { i = (i + step + deck.length) % deck.length; renderBrowse(); }
+function shuffle() {
+  for (let j = deck.length - 1; j > 0; j--) {
+    const k = Math.floor(Math.random() * (j + 1));
+    [deck[j], deck[k]] = [deck[k], deck[j]];
+  }
+  i = 0; renderBrowse();
+}
+
+/* ---------- manage ---------- */
+
+async function loadContent() { content = await (await fetch('/api/cards?' + Date.now())).json(); }
 
 function field(tag, value, placeholder) {
   const el = document.createElement(tag);
-  el.value = value;
-  el.placeholder = placeholder;
+  el.value = value; el.placeholder = placeholder;
   return el;
 }
 
 function renderList() {
   const list = $('cardList');
   list.innerHTML = '';
-  $('listEmpty').classList.toggle('hidden', all.length > 0);
-  all.forEach((c, idx) => {
+  $('listEmpty').classList.toggle('hidden', content.length > 0);
+  content.forEach((c, idx) => {
     const row = document.createElement('div');
     row.className = 'row';
     if (idx === editingIndex) {
-      const topic = field('input', c.topic, 'Topic (optional)');
-      const front = field('textarea', c.front, 'Front');
-      const back = field('textarea', c.back, 'Back');
+      const t = field('input', c.topic, 'Topic (optional)');
+      const f = field('textarea', c.front, 'Front');
+      const b = field('textarea', c.back, 'Back');
       const actions = document.createElement('div');
       actions.className = 'actions';
       const cancel = document.createElement('button');
-      cancel.textContent = 'Cancel';
+      cancel.textContent = 'Cancel'; cancel.className = 'btn';
       cancel.onclick = () => { editingIndex = null; renderList(); };
-      const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Save';
-      saveBtn.onclick = async () => {
-        if (!front.value.trim() || !back.value.trim()) { alert('Front and back cannot be empty.'); return; }
-        const next = all.slice();
-        next[idx] = { topic: topic.value.trim(), front: front.value.trim(), back: back.value.trim() };
-        if (await save(next)) { editingIndex = null; renderList(); }
+      const save = document.createElement('button');
+      save.textContent = 'Save'; save.className = 'btn';
+      save.onclick = async () => {
+        if (!f.value.trim() || !b.value.trim()) { alert('Front and back cannot be empty.'); return; }
+        const next = content.slice();
+        next[idx] = { topic: t.value.trim(), front: f.value.trim(), back: b.value.trim() };
+        if (await saveContent(next)) { editingIndex = null; renderList(); }
       };
-      actions.append(cancel, saveBtn);
-      row.append(topic, front, back, actions);
+      actions.append(cancel, save);
+      row.append(t, f, b, actions);
     } else {
       if (c.topic) {
         const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = c.topic;
+        meta.className = 'meta'; meta.textContent = c.topic;
         row.append(meta);
       }
-      const q = document.createElement('div');
-      q.className = 'q';
-      q.textContent = c.front;
-      const a = document.createElement('div');
-      a.className = 'a';
-      a.textContent = c.back;
-      const actions = document.createElement('div');
-      actions.className = 'actions';
+      const q = document.createElement('div'); q.className = 'q'; q.textContent = c.front;
+      const a = document.createElement('div'); a.className = 'a'; a.textContent = c.back;
+      const actions = document.createElement('div'); actions.className = 'actions';
       const edit = document.createElement('button');
-      edit.textContent = 'Edit';
+      edit.textContent = 'Edit'; edit.className = 'btn';
       edit.onclick = () => { editingIndex = idx; renderList(); };
       const del = document.createElement('button');
-      del.textContent = 'Delete';
-      del.className = 'danger';
+      del.textContent = 'Delete'; del.className = 'btn danger';
       del.onclick = async () => {
         if (!confirm('Delete this card?')) return;
-        if (await save(all.filter((_, j) => j !== idx))) renderList();
+        if (await saveContent(content.filter((_, j) => j !== idx))) renderList();
       };
       actions.append(edit, del);
       row.append(q, a, actions);
@@ -392,14 +434,9 @@ function renderList() {
   });
 }
 
-/* ---------- saving ---------- */
-
-async function save(newCards) {
+async function saveContent(newCards) {
   let pw = localStorage.getItem('editpw');
-  if (!pw) {
-    pw = prompt('Edit password:');
-    if (!pw) return false;
-  }
+  if (!pw) { pw = prompt('Edit password:'); if (!pw) return false; }
   let res;
   try {
     res = await fetch('/api/cards', {
@@ -407,33 +444,40 @@ async function save(newCards) {
       headers: { 'Content-Type': 'application/json', 'X-Edit-Password': pw },
       body: JSON.stringify(newCards),
     });
-  } catch {
-    alert('Could not reach the server — try again.');
-    return false;
-  }
-  if (res.status === 401) {
-    localStorage.removeItem('editpw');
-    alert('Wrong password.');
-    return false;
-  }
-  if (!res.ok) {
-    alert('Save failed (' + res.status + ').');
-    return false;
-  }
+  } catch { alert('Could not reach the server — try again.'); return false; }
+  if (res.status === 401) { localStorage.removeItem('editpw'); alert('Wrong password.'); return false; }
+  if (!res.ok) { alert('Save failed (' + res.status + ').'); return false; }
   localStorage.setItem('editpw', pw);
-  all = newCards;
-  refreshStudy();
+  content = newCards;
+  await loadStudy();          // keep review/browse in step with edited content
   return true;
+}
+
+/* ---------- mode switching ---------- */
+
+async function setMode(m) {
+  mode = m;
+  editingIndex = null;
+  i = 0;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === m));
+  refreshTopics();
+  const managing = m === 'manage';
+  $('manage').classList.toggle('hidden', !managing);
+  $('study').classList.toggle('hidden', managing);
+  if (managing) { hideNotice(); await loadContent(); renderList(); }
+  else render();
 }
 
 /* ---------- wiring ---------- */
 
 $('card').addEventListener('click', () => $('card').classList.toggle('flipped'));
+$('got').addEventListener('click', () => rate('got'));
+$('missed').addEventListener('click', () => rate('missed'));
 $('prev').addEventListener('click', () => move(-1));
 $('next').addEventListener('click', () => move(1));
 $('shuffle').addEventListener('click', shuffle);
-$('topicFilter').addEventListener('change', e => selectTopic(e.target.value));
-$('manageBtn').addEventListener('click', () => setMode(mode === 'manage' ? 'study' : 'manage'));
+$('topicFilter').addEventListener('change', () => { i = 0; render(); });
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setMode(t.dataset.mode)));
 
 $('addForm').addEventListener('submit', async e => {
   e.preventDefault();
@@ -443,32 +487,27 @@ $('addForm').addEventListener('submit', async e => {
     back: $('newBack').value.trim(),
   };
   if (!card.front || !card.back) return;
-  if (await save([...all, card])) {
-    $('newFront').value = '';
-    $('newBack').value = '';
-    $('newFront').focus();
+  if (await saveContent([...content, card])) {
+    $('newFront').value = ''; $('newBack').value = ''; $('newFront').focus();
     renderList();
   }
 });
 
 document.addEventListener('keydown', e => {
-  if (mode !== 'study' || deck.length === 0) return;
-  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-  if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flipped'); }
-  else if (e.key === 'ArrowLeft') move(-1);
-  else if (e.key === 'ArrowRight') move(1);
+  if (mode === 'manage' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flipped'); return; }
+  if (mode === 'review') {
+    if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'j') rate('got');
+    else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'f') rate('missed');
+  } else if (mode === 'browse') {
+    if (e.key === 'ArrowLeft') move(-1);
+    else if (e.key === 'ArrowRight') move(1);
+  }
 });
 
-fetch('/api/cards?' + Date.now())
-  .then(r => r.json())
-  .then(cards => {
-    all = cards;
-    refreshStudy();
-  })
-  .catch(() => {
-    $('empty').classList.remove('hidden');
-    $('empty').innerHTML = '<p>Could not load the cards — is the server running?</p>';
-  });
+loadStudy()
+  .then(() => setMode('review'))
+  .catch(() => showNotice('<p>Could not load your cards — is the server running?</p>'));
 </script>
 </body>
 </html>
