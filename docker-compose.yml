@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    container_name: learn
+    restart: unless-stopped
+    # run as fcuci's uid so cards.json stays editable from the host
+    user: "1000:1000"
+    ports:
+      - "127.0.0.1:8100:8100"
+    environment:
+      - EDIT_PASSWORD=${EDIT_PASSWORD}
+    volumes:
+      - ./site:/app/site

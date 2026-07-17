@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn — cue cards</title>
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --card: #ffffff;
+    --text: #1c1c1c;
+    --muted: #7a7a74;
+    --border: #e0e0da;
+    --accent: #2f6f4f;
+    --danger: #a53d3d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #191a19;
+      --card: #232523;
+      --text: #ececea;
+      --muted: #9a9a94;
+      --border: #35372f;
+      --accent: #7dbb9a;
+      --danger: #d98a8a;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    width: 100%;
+    max-width: 640px;
+    padding: 1.25rem 1rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  header h1 { font-size: 1.1rem; font-weight: 600; margin-right: auto; }
+  header select {
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    max-width: 11rem;
+  }
+  button {
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.danger:hover { border-color: var(--danger); color: var(--danger); }
+  main {
+    width: 100%;
+    max-width: 640px;
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  #counter {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .card-holder { perspective: 1200px; }
+  #card {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.35s ease;
+  }
+  #card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  .face.back { transform: rotateY(180deg); }
+  .face .topic {
+    position: absolute;
+    top: 0.85rem;
+    left: 1rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .face .label {
+    position: absolute;
+    top: 0.85rem;
+    right: 1rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .face .content {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .face.back .content { font-size: 1.05rem; }
+  .hint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  #empty {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  #empty code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.85em;
+  }
+  /* manage view */
+  #manage { display: flex; flex-direction: column; gap: 1rem; }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .panel h2 { font-size: 0.95rem; font-weight: 600; }
+  .panel input, .panel textarea {
+    font: inherit;
+    font-size: 0.9rem;
+    width: 100%;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.65rem;
+  }
+  .panel textarea { min-height: 4.2rem; resize: vertical; }
+  .panel .actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+  .row {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .row .meta {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .row .q { font-weight: 600; white-space: pre-wrap; }
+  .row .a { color: var(--muted); font-size: 0.9rem; white-space: pre-wrap; }
+  .row .actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+  .row .actions button { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+  #listEmpty { text-align: center; color: var(--muted); font-size: 0.85rem; }
+  .hidden { display: none !important; }
+  footer {
+    padding: 1rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Learn</h1>
+    <select id="topicFilter" class="hidden" aria-label="Filter by topic"></select>
+    <button id="manageBtn">Manage</button>
+  </header>
+  <main>
+    <div id="empty" class="hidden">
+      <p><strong>No cue cards yet.</strong></p>
+      <p>Click <em>Manage</em> to add your first card,<br>
+      or bulk-add cards in <code>cards.json</code> and reload.</p>
+    </div>
+
+    <div id="deck" class="hidden">
+      <p id="counter"></p>
+      <div class="card-holder">
+        <div id="card">
+          <div class="face front">
+            <span class="topic" id="topicFront"></span>
+            <span class="label">Question</span>
+            <div class="content" id="front"></div>
+          </div>
+          <div class="face back">
+            <span class="topic" id="topicBack"></span>
+            <span class="label">Answer</span>
+            <div class="content" id="back"></div>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Click the card (or press space) to flip · arrow keys to navigate</p>
+      <nav>
+        <button id="prev">← Prev</button>
+        <button id="shuffle">Shuffle</button>
+        <button id="next">Next →</button>
+      </nav>
+    </div>
+
+    <div id="manage" class="hidden">
+      <form id="addForm" class="panel">
+        <h2>Add a card</h2>
+        <input id="newTopic" placeholder="Topic (optional)">
+        <textarea id="newFront" placeholder="Front — the question or term" required></textarea>
+        <textarea id="newBack" placeholder="Back — the answer or definition" required></textarea>
+        <div class="actions"><button type="submit">Add card</button></div>
+      </form>
+      <div id="cardList"></div>
+      <p id="listEmpty" class="hidden">No cards yet — add your first one above.</p>
+    </div>
+  </main>
+  <footer>learn.fedecuci.com</footer>
+<script>
+let all = [];            // every card
+let deck = [];           // cards for the selected topic, study order
+let i = 0;               // index of the card being shown
+let mode = 'study';      // 'study' or 'manage'
+let editingIndex = null; // which card is being edited in the manage list
+
+const $ = id => document.getElementById(id);
+
+/* ---------- study view ---------- */
+
+function render() {
+  const card = deck[i];
+  $('card').classList.remove('flipped');
+  $('topicFront').textContent = card.topic || '';
+  $('topicBack').textContent = card.topic || '';
+  $('front').textContent = card.front;
+  $('back').textContent = card.back;
+  $('counter').textContent = (i + 1) + ' / ' + deck.length;
+}
+
+function move(step) {
+  i = (i + step + deck.length) % deck.length;
+  render();
+}
+
+function shuffle() {
+  for (let j = deck.length - 1; j > 0; j--) {
+    const k = Math.floor(Math.random() * (j + 1));
+    [deck[j], deck[k]] = [deck[k], deck[j]];
+  }
+  i = 0;
+  render();
+}
+
+function selectTopic(topic) {
+  deck = topic === 'all' ? all.slice() : all.filter(c => c.topic === topic);
+  i = 0;
+  if (deck.length) render();
+}
+
+// Rebuild the topic dropdown and show/hide study vs empty state
+function refreshStudy() {
+  const sel = $('topicFilter');
+  const topics = [...new Set(all.map(c => c.topic).filter(Boolean))];
+  const current = sel.value || 'all';
+  sel.innerHTML = '';
+  sel.add(new Option('All topics', 'all'));
+  topics.forEach(t => sel.add(new Option(t, t)));
+  sel.value = topics.includes(current) ? current : 'all';
+  const inStudy = mode === 'study';
+  sel.classList.toggle('hidden', !inStudy || topics.length < 2);
+  $('empty').classList.toggle('hidden', !inStudy || all.length > 0);
+  $('deck').classList.toggle('hidden', !inStudy || all.length === 0);
+  if (all.length) selectTopic(sel.value);
+}
+
+/* ---------- manage view ---------- */
+
+function setMode(m) {
+  mode = m;
+  editingIndex = null;
+  $('manage').classList.toggle('hidden', m !== 'manage');
+  $('manageBtn').textContent = m === 'manage' ? 'Done' : 'Manage';
+  refreshStudy();
+  if (m === 'manage') renderList();
+}
+
+function field(tag, value, placeholder) {
+  const el = document.createElement(tag);
+  el.value = value;
+  el.placeholder = placeholder;
+  return el;
+}
+
+function renderList() {
+  const list = $('cardList');
+  list.innerHTML = '';
+  $('listEmpty').classList.toggle('hidden', all.length > 0);
+  all.forEach((c, idx) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    if (idx === editingIndex) {
+      const topic = field('input', c.topic, 'Topic (optional)');
+      const front = field('textarea', c.front, 'Front');
+      const back = field('textarea', c.back, 'Back');
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      const cancel = document.createElement('button');
+      cancel.textContent = 'Cancel';
+      cancel.onclick = () => { editingIndex = null; renderList(); };
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save';
+      saveBtn.onclick = async () => {
+        if (!front.value.trim() || !back.value.trim()) { alert('Front and back cannot be empty.'); return; }
+        const next = all.slice();
+        next[idx] = { topic: topic.value.trim(), front: front.value.trim(), back: back.value.trim() };
+        if (await save(next)) { editingIndex = null; renderList(); }
+      };
+      actions.append(cancel, saveBtn);
+      row.append(topic, front, back, actions);
+    } else {
+      if (c.topic) {
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = c.topic;
+        row.append(meta);
+      }
+      const q = document.createElement('div');
+      q.className = 'q';
+      q.textContent = c.front;
+      const a = document.createElement('div');
+      a.className = 'a';
+      a.textContent = c.back;
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      const edit = document.createElement('button');
+      edit.textContent = 'Edit';
+      edit.onclick = () => { editingIndex = idx; renderList(); };
+      const del = document.createElement('button');
+      del.textContent = 'Delete';
+      del.className = 'danger';
+      del.onclick = async () => {
+        if (!confirm('Delete this card?')) return;
+        if (await save(all.filter((_, j) => j !== idx))) renderList();
+      };
+      actions.append(edit, del);
+      row.append(q, a, actions);
+    }
+    list.append(row);
+  });
+}
+
+/* ---------- saving ---------- */
+
+async function save(newCards) {
+  let pw = localStorage.getItem('editpw');
+  if (!pw) {
+    pw = prompt('Edit password:');
+    if (!pw) return false;
+  }
+  let res;
+  try {
+    res = await fetch('/api/cards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Edit-Password': pw },
+      body: JSON.stringify(newCards),
+    });
+  } catch {
+    alert('Could not reach the server — try again.');
+    return false;
+  }
+  if (res.status === 401) {
+    localStorage.removeItem('editpw');
+    alert('Wrong password.');
+    return false;
+  }
+  if (!res.ok) {
+    alert('Save failed (' + res.status + ').');
+    return false;
+  }
+  localStorage.setItem('editpw', pw);
+  all = newCards;
+  refreshStudy();
+  return true;
+}
+
+/* ---------- wiring ---------- */
+
+$('card').addEventListener('click', () => $('card').classList.toggle('flipped'));
+$('prev').addEventListener('click', () => move(-1));
+$('next').addEventListener('click', () => move(1));
+$('shuffle').addEventListener('click', shuffle);
+$('topicFilter').addEventListener('change', e => selectTopic(e.target.value));
+$('manageBtn').addEventListener('click', () => setMode(mode === 'manage' ? 'study' : 'manage'));
+
+$('addForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const card = {
+    topic: $('newTopic').value.trim(),
+    front: $('newFront').value.trim(),
+    back: $('newBack').value.trim(),
+  };
+  if (!card.front || !card.back) return;
+  if (await save([...all, card])) {
+    $('newFront').value = '';
+    $('newBack').value = '';
+    $('newFront').focus();
+    renderList();
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (mode !== 'study' || deck.length === 0) return;
+  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flipped'); }
+  else if (e.key === 'ArrowLeft') move(-1);
+  else if (e.key === 'ArrowRight') move(1);
+});
+
+fetch('/api/cards?' + Date.now())
+  .then(r => r.json())
+  .then(cards => {
+    all = cards;
+    refreshStudy();
+  })
+  .catch(() => {
+    $('empty').classList.remove('hidden');
+    $('empty').innerHTML = '<p>Could not load the cards — is the server running?</p>';
+  });
+</script>
+</body>
+</html>
