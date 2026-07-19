@@ -3,5 +3,10 @@
     "topic": "Statistics",
     "front": "What is the question that the p-value asks?",
     "back": "If the null hypothesis were true, how likely would it be to see data at least as extreme as what I actually observed, purely by chance? It's a statement about the data, not about the hypothesis — it is NOT the probability that the null hypothesis is true."
+  },
+  {
+    "topic": "Information theory",
+    "front": "What is the Shannon-Hartley limit?",
+    "back": "The maximum rate for error-free communication over a noisy channel: C = B · log₂(1 + S/N), with C in bits/s, B the bandwidth in Hz, and S/N the linear signal-to-noise ratio. Bandwidth helps linearly, signal power only logarithmically. Below C, coding can make errors arbitrarily rare; above C, reliable communication is impossible."
   }
 ]
