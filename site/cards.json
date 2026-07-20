@@ -8,5 +8,20 @@
     "topic": "Information theory",
     "front": "What is the Shannon-Hartley limit?",
     "back": "The maximum rate for error-free communication over a noisy channel: C = B · log₂(1 + S/N), with C in bits/s, B the bandwidth in Hz, and S/N the linear signal-to-noise ratio. Bandwidth helps linearly, signal power only logarithmically. Below C, coding can make errors arbitrarily rare; above C, reliable communication is impossible."
+  },
+  {
+    "topic": "Machine learning",
+    "front": "What is quantization in LLMs?",
+    "back": "Reducing the numerical precision of a model's weights (e.g. from 16-bit floats to 8-bit or 4-bit integers) to cut memory use and speed up inference. A 70B model needs ~140 GB at FP16 but only ~35 GB at 4-bit — the difference between a server rack and a single GPU. Costs a small quality loss: usually negligible at 8-bit, noticeable but often acceptable at 4-bit."
+  },
+  {
+    "topic": "Space / futurism",
+    "front": "What is a Dyson swarm?",
+    "back": "A hypothetical megastructure: a vast cloud of independent satellites or solar collectors orbiting a star to capture a large fraction of its energy output. It's the realistic version of the 'Dyson sphere' — a rigid shell would be mechanically impossible, so Freeman Dyson actually envisioned a swarm of free-orbiting elements that can be built incrementally."
+  },
+  {
+    "topic": "Space / futurism",
+    "front": "What is a Type I civilization on the Kardashev scale?",
+    "back": "A civilization that harnesses all the energy available on its planet — roughly 10¹⁶ W, the sunlight reaching Earth. Type II uses its entire star's output (~10²⁶ W, e.g. via a Dyson swarm); Type III its entire galaxy (~10³⁶ W). Humanity is currently around 0.7 (~10¹³ W)."
   }
 ]
