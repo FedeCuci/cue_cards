@@ -23,5 +23,15 @@
     "topic": "Space / futurism",
     "front": "What is a Type I civilization on the Kardashev scale?",
     "back": "A civilization that harnesses all the energy available on its planet — roughly 10¹⁶ W, the sunlight reaching Earth. Type II uses its entire star's output (~10²⁶ W, e.g. via a Dyson swarm); Type III its entire galaxy (~10³⁶ W). Humanity is currently around 0.7 (~10¹³ W)."
+  },
+  {
+    "topic": "Computing",
+    "front": "What is a FLOP?",
+    "back": "A floating-point operation — one arithmetic operation (add, multiply, …) on floating-point numbers, the basic unit of computational work. FLOPs as a count measures total compute (training a frontier LLM ≈ 10²⁵–10²⁶ FLOPs); FLOPS or FLOP/s as a rate measures hardware speed (a modern GPU ≈ 10¹⁵ FLOP/s, a petaflop)."
+  },
+  {
+    "topic": "Medicine",
+    "front": "What is the half-life of a drug, and why is it a useful measure?",
+    "back": "The time for the drug's plasma concentration to fall by half. Elimination is usually exponential (a constant fraction removed per unit time), so the half-life is independent of dose — one number predicts all the timing: dosing interval, time to steady state under repeated dosing (~4–5 half-lives), and washout after stopping (~97% gone after 5 half-lives)."
   }
 ]
