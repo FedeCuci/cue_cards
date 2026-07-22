@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Learn — cue cards</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#191a19" media="(prefers-color-scheme: dark)">
 <style>
   :root {
     --bg: #f6f6f4;
@@ -189,6 +194,7 @@
   .row .actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
   .row .actions button { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
   #listEmpty { text-align: center; color: var(--muted); font-size: 0.85rem; }
+  .listnote { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
   .hidden { display: none !important; }
   footer { padding: 1rem; font-size: 0.72rem; color: var(--muted); }
 </style>
@@ -202,6 +208,7 @@
     <button class="tab active" data-mode="review" id="tabReview">Review</button>
     <button class="tab" data-mode="browse" id="tabBrowse">Browse</button>
     <button class="tab" data-mode="manage" id="tabManage">Manage</button>
+    <button class="tab hidden" data-mode="unfinished" id="tabUnfinished">Unfinished</button>
     <select id="topicFilter" class="hidden" aria-label="Filter by topic"></select>
   </div>
 
@@ -242,12 +249,14 @@
         <h2>Add a card</h2>
         <input id="newTopic" placeholder="Topic (optional)">
         <textarea id="newFront" placeholder="Front — the question or term" required></textarea>
-        <textarea id="newBack" placeholder="Back — the answer or definition" required></textarea>
+        <textarea id="newBack" placeholder="Back — the answer or definition (optional, can fill in later)"></textarea>
         <div class="actions"><button type="submit" class="btn">Add card</button></div>
       </form>
       <div id="cardList"></div>
       <p id="listEmpty" class="hidden">No cards yet — add your first one above.</p>
     </div>
+
+    <div id="unfinished" class="hidden"></div>
   </main>
   <footer>learn.fedecuci.com</footer>
 <script>
@@ -268,7 +277,9 @@ async function loadStudy() {
   cards = await (await fetch('/api/study?' + Date.now())).json();
 }
 
-function dueCards() { return cards.filter(c => c.due && inTopic(c)); }
+// A card with no back isn't ready to study — keep it out of Review.
+function dueCards() { return cards.filter(c => c.due && c.back && inTopic(c)); }
+function unfinishedCards() { return cards.filter(c => !c.back); }
 
 function refreshTopics() {
   const sel = $('topicFilter');
@@ -278,14 +289,22 @@ function refreshTopics() {
   sel.add(new Option('All topics', 'all'));
   topics.forEach(t => sel.add(new Option(t, t)));
   sel.value = topics.includes(current) ? current : 'all';
-  sel.classList.toggle('hidden', mode === 'manage' || topics.length < 2);
+  sel.classList.toggle('hidden', mode === 'manage' || mode === 'unfinished' || topics.length < 2);
 }
 
 function updateDueBadge() {
-  const n = cards.filter(c => c.due).length;
+  const n = cards.filter(c => c.due && c.back).length;
   const badge = $('dueBadge');
   badge.textContent = n + ' due';
   badge.classList.toggle('hidden', n === 0);
+}
+
+function updateUnfinishedTab() {
+  const n = unfinishedCards().length;
+  const tab = $('tabUnfinished');
+  tab.textContent = n ? 'Unfinished (' + n + ')' : 'Unfinished';
+  // hide the tab when nothing's unfinished, unless we're currently on it
+  tab.classList.toggle('hidden', n === 0 && mode !== 'unfinished');
 }
 
 /* ---------- rendering ---------- */
@@ -295,7 +314,7 @@ function showCard(card, label) {
   $('topicFront').textContent = card.topic || '';
   $('topicBack').textContent = card.topic || '';
   $('front').textContent = card.front;
-  $('back').textContent = card.back;
+  $('back').textContent = card.back || '(no answer yet)';
   $('labelFront').textContent = label;
 }
 
@@ -337,13 +356,47 @@ function renderBrowse() {
   $('browseNav').classList.remove('hidden');
 }
 
+function renderUnfinished() {
+  $('study').classList.add('hidden');
+  const box = $('unfinished');
+  box.innerHTML = '';
+  const list = unfinishedCards();
+  if (list.length === 0) {
+    box.classList.add('hidden');
+    showNotice('<p><strong>Nothing unfinished.</strong></p>' +
+      '<p>Every card has an answer. 🎉</p>');
+    return;
+  }
+  hideNotice();
+  box.classList.remove('hidden');
+  const intro = document.createElement('p');
+  intro.className = 'listnote';
+  intro.textContent = list.length + (list.length > 1 ? ' cards' : ' card') +
+    ' without an answer — hidden from Review until you fill in the back ' +
+    '(in Manage, or in cards.json).';
+  box.append(intro);
+  list.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    if (c.topic) {
+      const m = document.createElement('div');
+      m.className = 'meta'; m.textContent = c.topic; row.append(m);
+    }
+    const q = document.createElement('div');
+    q.className = 'q'; q.textContent = c.front; row.append(q);
+    box.append(row);
+  });
+}
+
 function showNotice(html) { $('notice').innerHTML = html; $('notice').classList.remove('hidden'); }
 function hideNotice() { $('notice').classList.add('hidden'); }
 
 function render() {
   updateDueBadge();
+  updateUnfinishedTab();
   if (mode === 'review') renderReview();
   else if (mode === 'browse') { deck = cards.filter(inTopic); renderBrowse(); }
+  else if (mode === 'unfinished') renderUnfinished();
 }
 
 /* ---------- review actions ---------- */
@@ -402,7 +455,7 @@ function renderList() {
       const save = document.createElement('button');
       save.textContent = 'Save'; save.className = 'btn';
       save.onclick = async () => {
-        if (!f.value.trim() || !b.value.trim()) { alert('Front and back cannot be empty.'); return; }
+        if (!f.value.trim()) { alert('Front cannot be empty.'); return; }
         const next = content.slice();
         next[idx] = { topic: t.value.trim(), front: f.value.trim(), back: b.value.trim() };
         if (await saveContent(next)) { editingIndex = null; renderList(); }
@@ -416,7 +469,9 @@ function renderList() {
         row.append(meta);
       }
       const q = document.createElement('div'); q.className = 'q'; q.textContent = c.front;
-      const a = document.createElement('div'); a.className = 'a'; a.textContent = c.back;
+      const a = document.createElement('div'); a.className = 'a';
+      a.textContent = c.back || '(no answer yet)';
+      if (!c.back) a.style.opacity = '0.5';
       const actions = document.createElement('div'); actions.className = 'actions';
       const edit = document.createElement('button');
       edit.textContent = 'Edit'; edit.className = 'btn';
@@ -450,6 +505,8 @@ async function saveContent(newCards) {
   localStorage.setItem('editpw', pw);
   content = newCards;
   await loadStudy();          // keep review/browse in step with edited content
+  updateDueBadge();
+  updateUnfinishedTab();      // reflect newly added/filled back-less cards
   return true;
 }
 
@@ -461,10 +518,10 @@ async function setMode(m) {
   i = 0;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === m));
   refreshTopics();
-  const managing = m === 'manage';
-  $('manage').classList.toggle('hidden', !managing);
-  $('study').classList.toggle('hidden', managing);
-  if (managing) { hideNotice(); await loadContent(); renderList(); }
+  $('manage').classList.toggle('hidden', m !== 'manage');
+  $('unfinished').classList.toggle('hidden', m !== 'unfinished');
+  $('study').classList.toggle('hidden', m === 'manage' || m === 'unfinished');
+  if (m === 'manage') { hideNotice(); await loadContent(); renderList(); }
   else render();
 }
 
@@ -486,7 +543,7 @@ $('addForm').addEventListener('submit', async e => {
     front: $('newFront').value.trim(),
     back: $('newBack').value.trim(),
   };
-  if (!card.front || !card.back) return;
+  if (!card.front) return;
   if (await saveContent([...content, card])) {
     $('newFront').value = ''; $('newBack').value = ''; $('newFront').focus();
     renderList();
@@ -494,7 +551,7 @@ $('addForm').addEventListener('submit', async e => {
 });
 
 document.addEventListener('keydown', e => {
-  if (mode === 'manage' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (mode === 'manage' || mode === 'unfinished' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
   if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flipped'); return; }
   if (mode === 'review') {
     if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'j') rate('got');

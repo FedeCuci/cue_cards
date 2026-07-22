@@ -52,6 +52,14 @@ def index():
     return send_from_directory(SITE, "index.html")
 
 
+# Fetched by browsers when installing the site as an app (PWA)
+@app.get("/manifest.json")
+@app.get("/icon-192.png")
+@app.get("/icon-512.png")
+def pwa_asset():
+    return send_from_directory(SITE, request.path.lstrip("/"))
+
+
 @app.get("/api/cards")
 def get_cards():
     return jsonify(load_cards())
@@ -107,18 +115,19 @@ def save_cards():
     if not PASSWORD or request.headers.get("X-Edit-Password") != PASSWORD:
         return jsonify(error="wrong password"), 401
     cards = request.get_json(silent=True)
+    # back is optional: add a front on the web now, fill the back in later
     if not isinstance(cards, list) or not all(
         isinstance(c, dict)
         and isinstance(c.get("front"), str) and c["front"].strip()
-        and isinstance(c.get("back"), str) and c["back"].strip()
+        and isinstance(c.get("back", ""), str)
         for c in cards
     ):
-        return jsonify(error="each card needs a non-empty front and back"), 400
+        return jsonify(error="each card needs a non-empty front"), 400
     cleaned = [
         {
             "topic": str(c.get("topic") or "").strip(),
             "front": c["front"].strip(),
-            "back": c["back"].strip(),
+            "back": str(c.get("back") or "").strip(),
         }
         for c in cards
     ]
