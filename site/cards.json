@@ -33,5 +33,10 @@
     "topic": "Medicine",
     "front": "What is the half-life of a drug, and why is it a useful measure?",
     "back": "The time for the drug's plasma concentration to fall by half. Elimination is usually exponential (a constant fraction removed per unit time), so the half-life is independent of dose — one number predicts all the timing: dosing interval, time to steady state under repeated dosing (~4–5 half-lives), and washout after stopping (~97% gone after 5 half-lives)."
+  },
+  {
+    "topic": "",
+    "front": "Explain Jevons paradox",
+    "back": ""
   }
 ]
