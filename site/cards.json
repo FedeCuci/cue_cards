@@ -45,18 +45,18 @@
     "back": "The time-extended version of 3D Gaussian Splatting. In 3D splatting a scene is stored as millions of tiny 3D Gaussians — fuzzy blobs each with a position, size, orientation, color, and opacity — that are rasterized to render photorealistic novel viewpoints in real time (a fast alternative to NeRF-style neural fields). The '4D' adds time as a dimension so the Gaussians can move and deform, letting the method reconstruct and replay dynamic scenes (video / moving subjects) rather than just a static snapshot, while keeping real-time rendering."
   },
   {
-    "topic": "",
+    "topic": "Computing",
     "front": "What does idempotent mean?",
-    "back": ""
+    "back": "An operation is idempotent if doing it multiple times has the same effect as doing it once — formally, f(f(x)) = f(x). Examples: setting a value (x = 5), taking an absolute value, or an HTTP PUT/DELETE — repeating the request leaves the system in the same final state. Contrast with non-idempotent operations like x += 1 or HTTP POST, where each repeat changes the result. It matters most for safe retries: if a network call is idempotent, you can resend it after a timeout without fear of double-applying it."
   },
   {
-    "topic": "",
+    "topic": "Statistics",
     "front": "What is the difference between absolute risk and relative risk?",
-    "back": ""
+    "back": "Absolute risk is the actual probability of an event in a group (e.g. 2 in 10,000). Relative risk is the ratio of risk between two groups (e.g. a treatment that takes you from 1 to 2 in 10,000 is a relative risk of 2 — a '100% increase'). The catch: relative risk can sound alarming while the absolute change is tiny — doubling a 1-in-10,000 risk is still only 2-in-10,000, an absolute rise of 0.01%. Always ask for the absolute numbers; relative risk alone is easy to mislead with."
   },
   {
-    "topic": "",
+    "topic": "Data",
     "front": "What is temporal data? What does \"temporal\" mean in general?",
-    "back": ""
+    "back": "\"Temporal\" simply means relating to time. Temporal data is data with a time dimension — each record carries a timestamp or a time interval, so it captures how something changes over time rather than just its current state. Examples: time series (sensor readings, stock prices), event logs, or records with valid-from/valid-to dates. It lets you ask time-aware questions — trends, sequences, and 'what was the state at this past moment?' — that static snapshot data can't answer."
   }
 ]
