@@ -58,5 +58,10 @@
     "topic": "Data",
     "front": "What is temporal data? What does \"temporal\" mean in general?",
     "back": "\"Temporal\" simply means relating to time. Temporal data is data with a time dimension — each record carries a timestamp or a time interval, so it captures how something changes over time rather than just its current state. Examples: time series (sensor readings, stock prices), event logs, or records with valid-from/valid-to dates. It lets you ask time-aware questions — trends, sequences, and 'what was the state at this past moment?' — that static snapshot data can't answer."
+  },
+  {
+    "topic": "",
+    "front": "Explain the concept of \"Competing against non-consumption\"",
+    "back": ""
   }
 ]
