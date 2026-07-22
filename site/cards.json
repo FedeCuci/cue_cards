@@ -35,13 +35,13 @@
     "back": "The time for the drug's plasma concentration to fall by half. Elimination is usually exponential (a constant fraction removed per unit time), so the half-life is independent of dose — one number predicts all the timing: dosing interval, time to steady state under repeated dosing (~4–5 half-lives), and washout after stopping (~97% gone after 5 half-lives)."
   },
   {
-    "topic": "",
+    "topic": "Economics",
     "front": "Explain Jevons paradox",
-    "back": ""
+    "back": "When a technology makes using a resource more efficient, total consumption of that resource often rises rather than falls: the efficiency gain lowers the effective cost, and demand expands enough to more than offset the per-unit saving. Named after William Stanley Jevons, who noted in 1865 that more efficient steam engines increased Britain's total coal use. Modern echoes: more fuel-efficient cars encourage more driving; cheaper lighting expands total lighting. It's why efficiency alone doesn't guarantee lower resource use — you often also need a price signal (e.g. a tax) to curb the rebound."
   },
   {
-    "topic": "",
+    "topic": "Computer graphics",
     "front": "What is a 4D Gaussian Split?",
-    "back": ""
+    "back": "The time-extended version of 3D Gaussian Splatting. In 3D splatting a scene is stored as millions of tiny 3D Gaussians — fuzzy blobs each with a position, size, orientation, color, and opacity — that are rasterized to render photorealistic novel viewpoints in real time (a fast alternative to NeRF-style neural fields). The '4D' adds time as a dimension so the Gaussians can move and deform, letting the method reconstruct and replay dynamic scenes (video / moving subjects) rather than just a static snapshot, while keeping real-time rendering."
   }
 ]
