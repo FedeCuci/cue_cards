@@ -60,13 +60,13 @@
     "back": "\"Temporal\" simply means relating to time. Temporal data is data with a time dimension — each record carries a timestamp or a time interval, so it captures how something changes over time rather than just its current state. Examples: time series (sensor readings, stock prices), event logs, or records with valid-from/valid-to dates. It lets you ask time-aware questions — trends, sequences, and 'what was the state at this past moment?' — that static snapshot data can't answer."
   },
   {
-    "topic": "",
+    "topic": "Business / strategy",
     "front": "Explain the concept of \"Competing against non-consumption\"",
-    "back": ""
+    "back": "A disruptive-innovation idea from Clayton Christensen: instead of fighting incumbents for existing customers, target people who currently do without because existing solutions are too expensive, complex, or inaccessible. The competition is nonuse — a simple, cheap, 'good enough' product wins by serving those who had no option at all. Examples: the personal computer versus mainframes, or Khan Academy versus private tutoring. Because the baseline is nothing, even a modest offering delights, and the market can expand enormously rather than just shifting share."
   },
   {
-    "topic": "",
+    "topic": "Statistics",
     "front": "Explain the concept of \"Regression to the mean\"",
-    "back": ""
+    "back": "When a measurement is partly influenced by chance, an extreme observation tends to be followed by one closer to the average — not because of any cause, but because the luck that produced the extreme is unlikely to repeat. It's why the best performers often slump and the worst often rebound. The classic trap: praising after a great result and it 'worsens', punishing after a poor one and it 'improves', fooling you into crediting the intervention. Always ask whether an apparent effect is just regression before attributing it to a cause."
   }
 ]
