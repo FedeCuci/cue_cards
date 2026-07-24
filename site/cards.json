@@ -68,5 +68,10 @@
     "topic": "Statistics",
     "front": "Explain the concept of \"Regression to the mean\"",
     "back": "When a measurement is partly influenced by chance, an extreme observation tends to be followed by one closer to the average — not because of any cause, but because the luck that produced the extreme is unlikely to repeat. It's why the best performers often slump and the worst often rebound. The classic trap: praising after a great result and it 'worsens', punishing after a poor one and it 'improves', fooling you into crediting the intervention. Always ask whether an apparent effect is just regression before attributing it to a cause."
+  },
+  {
+    "topic": "",
+    "front": "What does \"Autoregressive\" mean in the context of biology?",
+    "back": ""
   }
 ]
