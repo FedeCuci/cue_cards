@@ -72,11 +72,11 @@
   {
     "topic": "",
     "front": "What does \"Autoregressive\" mean in the context of biology?",
-    "back": ""
+    "back": "In biology, autoregressive models describe processes where a future state or value depends linearly on its own previous values, often used to analyze time-series data like gene expression or population dynamics."
   },
   {
     "topic": "",
     "front": "What is transfer learning?",
-    "back": ""
+    "back": "Transfer learning is a machine learning technique where a model developed for one task is reused as the starting point for a model on a second, related task. This approach leverages previously learned features to improve efficiency and performance when data for the new task is limited."
   }
 ]
