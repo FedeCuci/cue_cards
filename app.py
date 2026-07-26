@@ -1,7 +1,10 @@
 import json
 import os
+import re
 import sqlite3
 import tempfile
+import urllib.error
+import urllib.request
 from datetime import date, timedelta
 
 from flask import Flask, g, jsonify, request, send_from_directory
@@ -12,6 +15,12 @@ DATA = os.path.join(BASE, "data")
 CARDS = os.path.join(SITE, "cards.json")
 DB = os.path.join(DATA, "progress.db")
 PASSWORD = os.environ.get("EDIT_PASSWORD", "")
+
+# AI "write the missing answers" feature (reuses the OpenRouter key from radar).
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-3-flash-preview")
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+FILL_MAX = 40  # most cards to answer in one click, to bound the API call
 
 # Leitner boxes: get a card right and it climbs a box and comes back later;
 # get it wrong and it drops to box 1. Values are days until the card is due again.
@@ -45,6 +54,20 @@ def close_db(exc):
 def load_cards():
     with open(CARDS) as f:
         return json.load(f)
+
+
+def write_cards(cards):
+    """Atomically overwrite cards.json (write to a temp file then rename)."""
+    fd, tmp = tempfile.mkstemp(dir=SITE)
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(cards, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        os.chmod(tmp, 0o644)
+        os.replace(tmp, CARDS)
+    except BaseException:
+        os.unlink(tmp)
+        raise
 
 
 @app.get("/")
@@ -110,6 +133,14 @@ def review():
     return jsonify(ok=True, box=box, due=due)
 
 
+@app.post("/api/verify")
+def verify():
+    """Check the edit password for the web unlock form. No side effects."""
+    if not PASSWORD or request.headers.get("X-Edit-Password") != PASSWORD:
+        return jsonify(ok=False), 401
+    return jsonify(ok=True)
+
+
 @app.post("/api/cards")
 def save_cards():
     if not PASSWORD or request.headers.get("X-Edit-Password") != PASSWORD:
@@ -131,15 +162,93 @@ def save_cards():
         }
         for c in cards
     ]
-    # Write to a temp file then rename, so cards.json is never left half-written
-    fd, tmp = tempfile.mkstemp(dir=SITE)
-    try:
-        with os.fdopen(fd, "w") as f:
-            json.dump(cleaned, f, ensure_ascii=False, indent=2)
-            f.write("\n")
-        os.chmod(tmp, 0o644)
-        os.replace(tmp, CARDS)
-    except BaseException:
-        os.unlink(tmp)
-        raise
+    write_cards(cleaned)
     return jsonify(ok=True, count=len(cleaned))
+
+
+FILL_PROMPT = (
+    "You are writing the answer side of study flashcards. Each card below has a "
+    "number, an optional topic, and a front (the question or term). Write the back: "
+    "a clear, accurate, self-contained answer. Keep it concise — 1 to 3 sentences, "
+    "no preamble, and do not restate the question. Return ONLY JSON shaped as "
+    '{"answers": [{"i": <card number>, "back": <string>}, ...]} with one entry per '
+    "card, reusing the given numbers.\n\nCards:\n"
+)
+
+
+def generate_backs(items):
+    """items: list of (index, topic, front). Returns {index: back}."""
+    lines = []
+    for i, topic, front in items:
+        tag = f" [topic: {topic}]" if topic else ""
+        lines.append(f"{i}.{tag} {front}")
+    payload = {
+        "model": OPENROUTER_MODEL,
+        "messages": [{"role": "user", "content": FILL_PROMPT + "\n".join(lines)}],
+        "temperature": 0.2,
+        "max_tokens": 2000,
+        "response_format": {"type": "json_object"},
+    }
+    req = urllib.request.Request(
+        OPENROUTER_URL,
+        data=json.dumps(payload).encode(),
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://learn.fedecuci.com",
+            "X-Title": "Learn cue cards",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        body = json.loads(r.read().decode())
+    content = body["choices"][0]["message"]["content"].strip()
+    fence = re.match(r"(?s)^```(?:json)?\s*(.*?)\s*```$", content)
+    if fence:
+        content = fence.group(1)
+    data = json.loads(content)
+    out = {}
+    for a in data.get("answers", []):
+        try:
+            idx, back = int(a["i"]), str(a["back"]).strip()
+        except (KeyError, ValueError, TypeError):
+            continue
+        if back:
+            out[idx] = back
+    return out
+
+
+@app.post("/api/fill")
+def fill():
+    """Ask the model to write the back of every card that's still missing one."""
+    if not PASSWORD or request.headers.get("X-Edit-Password") != PASSWORD:
+        return jsonify(error="wrong password"), 401
+    if not OPENROUTER_KEY:
+        return jsonify(error="AI is not configured on the server"), 503
+    cards = load_cards()
+    todo = [(i, str(c.get("topic") or "").strip(), c["front"])
+            for i, c in enumerate(cards) if not str(c.get("back") or "").strip()]
+    if not todo:
+        return jsonify(ok=True, filled=0, remaining=0)
+    todo = todo[:FILL_MAX]
+    try:
+        answers = generate_backs(todo)
+    except (urllib.error.URLError, urllib.error.HTTPError, OSError,
+            ValueError, KeyError, IndexError) as e:
+        return jsonify(error=f"AI request failed: {e}"), 502
+    filled = 0
+    for i, _, _ in todo:
+        if i in answers:
+            cards[i]["back"] = answers[i]
+            filled += 1
+    if filled:
+        cleaned = [
+            {
+                "topic": str(c.get("topic") or "").strip(),
+                "front": str(c.get("front") or "").strip(),
+                "back": str(c.get("back") or "").strip(),
+            }
+            for c in cards
+        ]
+        write_cards(cleaned)
+    remaining = sum(1 for c in cards if not str(c.get("back") or "").strip())
+    return jsonify(ok=True, filled=filled, remaining=remaining)

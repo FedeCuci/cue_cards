@@ -9,6 +9,8 @@ services:
       - "127.0.0.1:8100:8100"
     environment:
       - EDIT_PASSWORD=${EDIT_PASSWORD}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL}
     volumes:
       - ./site:/app/site
       - ./data:/app/data
