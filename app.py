@@ -52,6 +52,9 @@ def close_db(exc):
 
 
 def load_cards():
+    # cards.json is server-owned and not in git; a fresh deploy may not have it yet
+    if not os.path.exists(CARDS):
+        return []
     with open(CARDS) as f:
         return json.load(f)
 

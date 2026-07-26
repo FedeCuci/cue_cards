@@ -1,3 +1,5 @@
 .env
 data/
 __pycache__/
+# card content is server-owned now (backed up by restic/Hetzner), not tracked
+site/cards.json

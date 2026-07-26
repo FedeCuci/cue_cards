@@ -1,9 +1,9 @@
 # Cue cards
 
-A dead-simple flashcard app. Live at <https://learn.fedecuci.com>.
+A dead-simple flashcard app. Live at <https://learn.fedecuci.com>
+(also <https://cuecards.fedecuci.com>).
 
-Cards live in [`site/cards.json`](site/cards.json) — a plain list, safe to edit by hand
-or with AI:
+Cards live in `site/cards.json` on the server — a plain list:
 
 ```json
 [
@@ -11,61 +11,50 @@ or with AI:
 ]
 ```
 
-`topic` is optional; `front` and `back` are required. A card's `front` is its identity —
-change a `front` and it counts as a different card.
+`topic` and `back` are optional; `front` is required and is the card's identity —
+change a `front` and it counts as a different card. A card with no `back` is treated
+as *unfinished*: it's hidden from Review and listed under the **Unfinished** tab.
+
+This repo holds the **app code**. The card content (`site/cards.json`) is owned by
+the running server, is **not** tracked in git, and is backed up by the host's normal
+backups (restic → Backblaze, nightly). There is no laptop/GitHub card syncing — you
+author cards on the site.
 
 ## Adding cards
 
-Either way works, and they sync:
+All from the website's **Manage** tab (needs the edit password):
 
-- **On the website** — the *Manage* button (add / edit / delete). Needs the edit password.
-- **From any machine** — edit `site/cards.json`, commit, push. The VPS pulls every 10
-  minutes, so cards show up on the site on their own.
+- **Add / edit / delete** cards by hand. `Ctrl`/`Cmd`+`Enter` adds a card.
+- Leave the back blank now, fill it later.
+- **Unfinished** tab → *"✨ Write missing answers with AI"* fills every blank back
+  in one batch (uses the OpenRouter key in `.env`).
 
 ## Running it
 
 ```sh
-cp .env.example .env   # then set EDIT_PASSWORD
+cp .env.example .env   # set EDIT_PASSWORD, OPENROUTER_API_KEY, OPENROUTER_MODEL
 docker compose up -d --build
 ```
 
 Serves on `127.0.0.1:8100`; the VPS publishes it through a Cloudflare tunnel.
-`.env` holds the edit password and is not committed.
-
-## Sync
-
-The VPS runs `sync.sh` every 10 minutes (`learn-sync.timer`): commit web edits →
-merge remote → push.
-
-`site/cards.json` uses a custom merge driver ([`merge_cards.py`](merge_cards.py)) so
-cards added in two places at once both survive instead of conflicting. Merge drivers
-are configured per-clone and can't be committed, so **run this once in every clone**:
-
-```sh
-git config merge.cuecards.name "cue card merge"
-git config merge.cuecards.driver "python3 $PWD/merge_cards.py %O %A %B"
-```
-
-Without it you'll still get normal (line-level) conflicts in `cards.json` — nothing
-breaks, it's just annoying.
-
-Pulled code changes need `docker compose up -d --build`; card changes need nothing.
+`.env` (edit password + OpenRouter key) is not committed. A fresh deploy starts with
+no cards until you add some. Code changes need `docker compose up -d --build`.
 
 ## Studying (spaced repetition)
 
-The site has three tabs:
+Tabs:
 
-- **Review** — shows only cards that are *due*, one at a time. Flip, then rate
-  *Got it* or *Missed*. Rating needs no password.
-- **Browse** — every card, free flip / shuffle / arrow-key navigation. No rating.
-- **Manage** — add / edit / delete card content (password-protected).
+- **Review** — only cards that are *due* (and have an answer), one at a time. Flip,
+  then rate *Got it* or *Missed*. Rating needs no password.
+- **Browse** — every card, free flip / shuffle / arrow-key navigation.
+- **Unfinished** — cards still missing a back (appears only when there are any).
+- **Manage** — add / edit / delete content (password-protected).
 
 Scheduling is a simple 5-box [Leitner](https://en.wikipedia.org/wiki/Leitner_system)
 system: *Got it* moves a card up a box and further out (1 → 3 → 7 → 16 → 35 days);
 *Missed* drops it back to box 1 (due tomorrow). A new card is due immediately.
 
 Progress lives in `data/progress.db` (SQLite), keyed on each card's `front`. It is
-**not** in git and never syncs — it's per-server study state, not content. Editing a
-card's topic or back keeps its progress; changing its `front` starts it fresh (the
-`front` is the card's identity). Deleting `progress.db` just resets all schedules,
-your cards are untouched.
+**not** in git — it's per-server study state, not content. Editing a card's topic or
+back keeps its progress; changing its `front` starts it fresh. Deleting `progress.db`
+just resets all schedules; your cards are untouched.
